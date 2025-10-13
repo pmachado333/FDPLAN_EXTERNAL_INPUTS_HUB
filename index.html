@@ -1,0 +1,205 @@
+<!-- /index.html -->
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FDPlan External Input Generator HUB</title>
+  <meta name="description" content="A hub for FDPlan external input generators with visual previews and links." />
+  <style>
+    :root{
+      --slb-primary:#0033a1; --slb-primary-600:#0b3bb3; --slb-accent:#00a3e0;
+      --bg:#f6f8fc; --surface:#ffffff; --surface-2:#eef2f7;
+      --text:#0b1220; --muted:#5f6b7a; --ring:var(--slb-accent);
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{ --bg:#0b1220; --surface:#121a2a; --surface-2:#18233a; --text:#e6edf3; --muted:#9aa6b2; --shadow:0 10px 30px rgba(0,0,0,.35); }
+    }
+    [data-theme="light"]{ --bg:#f6f8fc; --surface:#fff; --surface-2:#eef2f7; --text:#0b1220; --muted:#5f6b7a; --shadow:0 10px 30px rgba(0,0,0,.08); }
+    [data-theme="dark"]{ --bg:#0b1220; --surface:#121a2a; --surface-2:#18233a; --text:#e6edf3; --muted:#9aa6b2; --shadow:0 10px 30px rgba(0,0,0,.35); }
+
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial;line-height:1.45}
+    a{color:var(--slb-accent);text-decoration:none} a:hover{text-decoration:underline} button{font:inherit;color:inherit}
+
+    .site-header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--slb-primary) 0%,var(--slb-primary-600) 100%);color:#fff;border-bottom:1px solid rgba(255,255,255,.1)}
+    .header-inner{max-width:1200px;margin:0 auto;padding:18px 20px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+    .brand{display:flex;flex-direction:column;gap:4px}
+    .brand h1{margin:0;font-size:clamp(20px,2.6vw,28px);letter-spacing:.2px;font-weight:800}
+    .brand .subtitle{opacity:.95;font-weight:500;font-size:13.5px}
+    .toolbar{display:flex;gap:10px;align-items:center}
+    .theme-toggle{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;padding:8px 10px;border-radius:12px;cursor:pointer;backdrop-filter:saturate(160%) blur(8px)}
+    .theme-toggle:hover{background:rgba(255,255,255,.15)}
+
+    .controls{max-width:1200px;margin:14px auto 10px;padding:0 20px 6px;display:grid;gap:10px}
+    .search-row{display:grid;grid-template-columns:1fr auto;gap:10px}
+    .search-input{width:100%;background:var(--surface);border:1px solid var(--surface-2);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);outline:none;transition:box-shadow .2s,border-color .2s}
+    .search-input:focus{border-color:var(--ring);box-shadow:0 0 0 4px color-mix(in oklab,var(--ring) 20%,transparent)}
+
+    .grid{max-width:1200px;margin:8px auto 60px;padding:0 20px;display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .card{grid-column:span 12;background:var(--surface);border:1px solid var(--surface-2);border-radius:18px;overflow:clip;box-shadow:var(--shadow);display:grid;grid-template-rows:auto 1fr auto;min-height:280px;transition:transform .15s ease,box-shadow .2s ease,border-color .2s}
+    .card:hover{transform:translateY(-2px)}
+    @media (min-width:720px){.card{grid-column:span 6}}
+    @media (min-width:1024px){.card{grid-column:span 4}}
+
+    .card-head{padding:14px 14px 6px;display:grid;gap:4px}
+    .card-title{font-weight:700;font-size:16px;margin:0}
+    .card-desc{color:var(--muted);font-size:13.5px;margin:0}
+
+    .preview{position:relative;height:220px;background:var(--surface-2);border-top:1px solid var(--surface-2);display:grid;place-items:center;overflow:hidden;}
+    .preview picture,.preview img{width:100%;height:100%;object-fit:cover;display:block;}
+    .preview img{width:100%;height:100%;object-fit:cover;display:block;}
+    .preview .fallback{position:absolute;inset:auto 8px 8px 8px;font-size:12px;color:var(--muted);background:rgba(0,0,0,.05);padding:4px 8px;border-radius:6px}
+
+    .card-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px;border-top:1px solid var(--surface-2);background:color-mix(in oklab,var(--surface) 85%,transparent)}
+    .btn{display:inline-flex;gap:8px;align-items:center;justify-content:center;padding:8px 12px;border-radius:12px;border:1px solid var(--surface-2);background:var(--surface);text-decoration:none;color:inherit;font-weight:600;font-size:13.5px;transition:border-color .2s,background .2s,transform .12s}
+    .btn:hover{border-color:var(--slb-accent);text-decoration:none}
+    .btn.primary{background:var(--slb-accent);color:#fff;border-color:var(--slb-accent)}
+    .btn.primary:hover{filter:brightness(1.05)}
+    .btn:active{transform:translateY(1px)}
+
+    .empty{grid-column:1 / -1;text-align:center;color:var(--muted);padding:40px 0 60px;border:2px dashed var(--surface-2);border-radius:16px}
+    footer{max-width:1200px;margin:0 auto 40px;padding:0 20px;color:var(--muted);font-size:12.5px}
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner" aria-label="SLB Blue Header">
+    <div class="header-inner">
+      <div class="brand">
+        <h1>FDPlan External Input Generator HUB</h1>
+        <div class="subtitle">by Patrick Machado</div>
+      </div>
+      <div class="toolbar">
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌞/🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="controls" aria-label="Search">
+    <div class="search-row">
+      <input id="search" class="search-input" type="search" placeholder="Search tools by name or description…" aria-label="Search projects" />
+      <div></div>
+    </div>
+  </section>
+
+  <main class="grid" id="grid" aria-live="polite"></main>
+
+  <!-- <footer>
+    Add preview screenshots in the repo root using the filenames below (WebP preferred, PNG fallback). If an image is missing, a text fallback appears.
+  </footer> -->
+
+  <script>
+    /* Why: Image previews avoid iframe CSP issues; filenames are fixed and simple. */
+    const PROJECTS = [
+      {
+        name: "Bathy Extractor",
+        url: "https://pmachado333.github.io/Bathy_extractor/",
+        repo: "https://github.com/pmachado333/Bathy_extractor",
+        description: "This page generates bathymetry grids in Earth Grid Vision (EGV) format for any field location. ",
+        imageBase: "bathy_extractor" // expects .webp and/or .png in root
+      },
+      {
+        name: "Reservoir Targets",
+        url: "https://pmachado333.github.io/Well-target/",
+        repo: "https://github.com/pmachado333/Well-target",
+        description: "Create a Reservoir Targets file to be use as input for the FDPlan Field Layout Generator.",
+        imageBase: "well_target"
+      },
+      {
+        name: "Simulation Input",
+        url: "https://pmachado333.github.io/Simulation_Input/",
+        repo: "https://github.com/pmachado333/Simulation_Input",
+        description: "Build and validate simulation-ready input files (CSV) for FDPlan.",
+        imageBase: "simulation_input"
+      },
+      {
+        name: "Simulation Logic",
+        url: "https://pmachado333.github.io/Simulation_Logic/",
+        repo: "https://github.com/pmachado333/Simulation_Logic",
+        description: "Reusable logic/rules for field management and consistency.",
+        imageBase: "simulation_logic"
+      }
+    ];
+
+    /* Theme toggle with persistence */
+    const root = document.documentElement;
+    const themeStored = localStorage.getItem("theme");
+    if (themeStored === "light" || themeStored === "dark") root.setAttribute("data-theme", themeStored);
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const next = (root.getAttribute("data-theme") === "dark") ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    });
+
+    /* Utilities */
+    const el = (tag, props = {}, ...children) => {
+      const node = document.createElement(tag);
+      Object.entries(props).forEach(([k, v]) => {
+        if (k === "dataset") Object.entries(v).forEach(([dk, dv]) => node.dataset[dk] = dv);
+        else if (k === "class") node.className = v;
+        else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2), v);
+        else if (v !== undefined && v !== null) node.setAttribute(k, v);
+      });
+      children.flat().forEach(c => node.append(c?.nodeType ? c : document.createTextNode(c)));
+      return node;
+    };
+    const debounce = (fn, ms=200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+    /* Grid + search */
+    const grid = document.getElementById("grid");
+    const searchInput = document.getElementById("search");
+
+    function renderCards(list){
+      grid.textContent = "";
+      if (!list.length) { grid.append(el("div",{class:"empty"},"No tools match your search.")); return; }
+
+      list.forEach(p => {
+        const card = el("article", { class:"card" });
+
+        const head = el("div", { class:"card-head" },
+          el("h3", { class:"card-title" }, p.name),
+          el("p", { class:"card-desc" }, p.description || "")
+        );
+
+        const picture = el("picture", {},
+          el("source", { type: "image/webp", srcset: `${p.imageBase}.webp` }),
+          el("img", { src: `${p.imageBase}.png`, alt: `${p.name} preview` })
+        );
+        const preview = el("div", { class:"preview" }, picture);
+
+        // graceful fallback if PNG also fails
+        picture.querySelector("img").addEventListener("error", () => {
+          preview.textContent = "";
+          preview.append(el("div", { class:"fallback" }, "Preview unavailable — add " + p.imageBase + ".webp or .png at repo root."));
+        }, { once: true });
+
+        const actions = el("div", { class:"card-actions" },
+          el("a", { class:"btn primary", href: p.url, target:"_blank", rel:"noopener noreferrer" }, "Live Demo"),
+          el("a", { class:"btn", href: p.repo, target:"_blank", rel:"noopener noreferrer" }, "Source")
+        );
+
+        card.append(head, preview, actions);
+        grid.append(card);
+      });
+    }
+
+    function filterProjects(q){
+      const term = (q||"").trim().toLowerCase();
+      return PROJECTS.filter(p => {
+        if (!term) return true;
+        const hay = [p.name, p.description].join(" ").toLowerCase();
+        return hay.includes(term);
+      });
+    }
+
+    const update = debounce(() => {
+      renderCards(filterProjects(searchInput.value));
+    }, 60);
+
+    /* Init */
+    renderCards(PROJECTS);
+    searchInput.addEventListener("input", update);
+  </script>
+</body>
+</html>
