@@ -47,9 +47,16 @@
     .card-title{font-weight:700;font-size:16px;margin:0}
     .card-desc{color:var(--muted);font-size:13.5px;margin:0}
 
-    .preview{position:relative;height:220px;background:var(--surface-2);border-top:1px solid var(--surface-2);display:grid;place-items:center;overflow:hidden;}
+    /* Square preview for 1:1 images */
+    .preview{
+      position:relative;
+      aspect-ratio:1 / 1; /* why: enforce square thumbnails */
+      width:100%;
+      background:var(--surface-2);
+      border-top:1px solid var(--surface-2);
+      display:grid;place-items:center;overflow:hidden;
+    }
     .preview picture,.preview img{width:100%;height:100%;object-fit:cover;display:block;}
-    .preview img{width:100%;height:100%;object-fit:cover;display:block;}
     .preview .fallback{position:absolute;inset:auto 8px 8px 8px;font-size:12px;color:var(--muted);background:rgba(0,0,0,.05);padding:4px 8px;border-radius:6px}
 
     .card-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px;border-top:1px solid var(--surface-2);background:color-mix(in oklab,var(--surface) 85%,transparent)}
@@ -97,7 +104,7 @@
         url: "https://pmachado333.github.io/Bathy_extractor/",
         repo: "https://github.com/pmachado333/Bathy_extractor",
         description: "This page generates bathymetry grids in Earth Grid Vision (EGV) format for any field location. ",
-        imageBase: "bathy_extractor" // expects .webp and/or .png in root
+        imageBase: "bathy_extractor"
       },
       {
         name: "Reservoir Targets",
@@ -125,7 +132,7 @@
         url: "https://pmachado333.github.io/DC_Converter/",
         repo: "https://github.com/pmachado333/DC_Converter",
         description: "This page is used to paste multi-well time/pressure/rate data, set units, and export IXFM IPR decline curves as JSON.",
-        imageBase: "dc_converter" // expects .webp and/or .png in root
+        imageBase: "dc_converter"
       },
     ];
 
@@ -171,7 +178,12 @@
 
         const picture = el("picture", {},
           el("source", { type: "image/webp", srcset: `${p.imageBase}.webp` }),
-          el("img", { src: `${p.imageBase}.png`, alt: `${p.name} preview` })
+          el("img", {
+            src: `${p.imageBase}.png`,
+            alt: `${p.name} preview`,
+            loading: "lazy",      // why: performance
+            decoding: "async"     // why: faster paint
+          })
         );
         const preview = el("div", { class:"preview" }, picture);
 
