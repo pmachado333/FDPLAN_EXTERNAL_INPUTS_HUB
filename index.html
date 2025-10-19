@@ -1,4 +1,4 @@
-<!-- /index.html -->
+<!-- HUB of External Input pages compatible with FDPlan -->
 <!doctype html>
 <html lang="en" data-theme="">
 <head>
@@ -47,10 +47,10 @@
     .card-title{font-weight:700;font-size:16px;margin:0}
     .card-desc{color:var(--muted);font-size:13.5px;margin:0}
 
-    /* Square preview for 1:1 images */
+    /* I keep previews square (1:1). */
     .preview{
       position:relative;
-      aspect-ratio:1 / 1; /* why: enforce square thumbnails */
+      aspect-ratio:1 / 1; /* I enforce square thumbnails */
       width:100%;
       background:var(--surface-2);
       border-top:1px solid var(--surface-2);
@@ -93,11 +93,11 @@
   <main class="grid" id="grid" aria-live="polite"></main>
 
   <!-- <footer>
-    Add preview screenshots in the repo root using the filenames below (WebP preferred, PNG fallback). If an image is missing, a text fallback appears.
+    I keep preview screenshots in the repo root with the filenames below (WebP preferred, PNG as fallback). If an image is missing, I show a small text fallback.
   </footer> -->
 
   <script>
-    /* Why: Image previews avoid iframe CSP issues; filenames are fixed and simple. */
+    /* I use image previews to avoid iframe CSP issues and keep filenames fixed/simple. */
     const PROJECTS = [
       {
         name: "Bathy Extractor",
@@ -134,9 +134,16 @@
         description: "This page is used to paste multi-well time/pressure/rate data, set units, and export IXFM IPR decline curves as JSON.",
         imageBase: "dc_converter"
       },
+      {
+        name: "Well Design Inputs",
+        url: "https://pmachado333.github.io/well_design_inputs/",
+        repo: "https://github.com/pmachado333/well_design_inputs",
+        description: "EMPTY",
+        imageBase: "well_design"
+      },
     ];
 
-    /* Theme toggle with persistence */
+    /* I persist the theme choice. */
     const root = document.documentElement;
     const themeStored = localStorage.getItem("theme");
     if (themeStored === "light" || themeStored === "dark") root.setAttribute("data-theme", themeStored);
@@ -146,7 +153,6 @@
       localStorage.setItem("theme", next);
     });
 
-    /* Utilities */
     const el = (tag, props = {}, ...children) => {
       const node = document.createElement(tag);
       Object.entries(props).forEach(([k, v]) => {
@@ -160,7 +166,6 @@
     };
     const debounce = (fn, ms=200) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
 
-    /* Grid + search */
     const grid = document.getElementById("grid");
     const searchInput = document.getElementById("search");
 
@@ -181,13 +186,13 @@
           el("img", {
             src: `${p.imageBase}.png`,
             alt: `${p.name} preview`,
-            loading: "lazy",      // why: performance
-            decoding: "async"     // why: faster paint
+            loading: "lazy",      // I enable lazy loading for performance
+            decoding: "async"     // I use async decoding for faster paint
           })
         );
         const preview = el("div", { class:"preview" }, picture);
 
-        // graceful fallback if PNG also fails
+        // If the PNG fails, I show a small text fallback.
         picture.querySelector("img").addEventListener("error", () => {
           preview.textContent = "";
           preview.append(el("div", { class:"fallback" }, "Preview unavailable — add " + p.imageBase + ".webp or .png at repo root."));
@@ -216,7 +221,6 @@
       renderCards(filterProjects(searchInput.value));
     }, 60);
 
-    /* Init */
     renderCards(PROJECTS);
     searchInput.addEventListener("input", update);
   </script>
